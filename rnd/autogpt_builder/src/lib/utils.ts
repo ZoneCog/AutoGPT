@@ -140,13 +140,19 @@ export function setNestedProperty(obj: any, path: string, value: any) {
 
   for (let i = 0; i < keys.length - 1; i++) {
     const key = keys[i];
+    if (key === "__proto__" || key === "constructor") {
+      return; // Prevent prototype pollution
+    }
     if (!current[key] || typeof current[key] !== "object") {
       current[key] = {};
     }
     current = current[key];
   }
 
-  current[keys[keys.length - 1]] = value;
+  const finalKey = keys[keys.length - 1];
+  if (finalKey !== "__proto__" && finalKey !== "constructor") {
+    current[finalKey] = value;
+  }
 }
 
 export function removeEmptyStringsAndNulls(obj: any): any {
